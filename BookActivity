@@ -1,0 +1,240 @@
+package com.example.timetable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.R.layout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.AnimationDrawable;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.GridLayout.LayoutParams;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+public class BookActivity extends Activity implements OnTouchListener {
+	float x = 0;
+	float y = 0;
+	float yStart = 0;
+	float yEnd = 0;
+    float xStart = 0;
+    float xEnd = 0;
+    float deltX=0;
+    int xbook=0;
+    int ybook=0;
+    
+   MyViewPager myViewPager;
+    ViewPager viewPager;
+    MyPagerAdapter myPagerAdapter;
+Viewpage view;
+	    @Override
+	    protected void onCreate(Bundle savedInstanceState) {
+	     super.onCreate(savedInstanceState);
+	     getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+		    getActionBar().hide();
+		   
+	     setContentView(R.layout.activity_book);
+	     Intent intent = getIntent();
+         
+	     viewPager = (ViewPager)findViewById(R.id.view_pager);
+	     //myViewPager = new  MyViewPager(this);
+	     myPagerAdapter = new MyPagerAdapter();
+	       
+	     viewPager.setAdapter(myPagerAdapter);
+	     viewPager.setCurrentItem(1); 
+ 
+	    }
+	   
+	    private class MyPagerAdapter extends PagerAdapter{
+	    	
+	     int NumberOfPages = 2;
+	     
+	     int[] res = { 
+	     R.drawable.page1_left,
+	     R.drawable.page1_right,
+	     };
+	     
+	    
+	     @Override
+	     public int getCount() {
+	      return NumberOfPages;
+	     }
+
+	     @Override
+	     public boolean isViewFromObject(View view, Object object) {
+	      return view == object;
+	     }
+	  
+	    
+	     @Override
+	     public Object instantiateItem( ViewGroup container, final int position) {
+	    	 
+	    	 ViewGroup.LayoutParams  params=new ViewGroup.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+		        int page = position;
+		       
+	         TextView textView = new TextView(BookActivity.this);
+	        textView.setTextSize(30);
+	         textView.setText("Понедельник");
+	         textView.setLayoutParams(params);
+	         textView.setPadding(0, 10, 0, 0);
+          textView.setGravity(Gravity.CENTER|Gravity.TOP);
+	   
+	         final ImageView imageView = new ImageView(BookActivity.this);
+	        
+	         imageView.setBackgroundResource(res[page]);
+	         imageView.setLayoutParams(params);
+	         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+	         
+	         RelativeLayout layout = new RelativeLayout(BookActivity.this);
+	         
+	         
+	        xbook= imageView.getWidth();
+	       ybook= imageView.getHeight();
+	       GridLayout gride= new  GridLayout(BookActivity.this);
+	       gride.setColumnCount(2);
+	       gride.setRowCount(3);
+	       gride.setX(xbook);
+	       gride.setY(ybook);
+	     EditText editText = new EditText(BookActivity.this);
+	    
+	       
+	         layout.addView(imageView);
+	         layout.addView(textView);
+	      
+	        layout.setOnTouchListener(new OnTouchListener(){
+              
+	        	 @Override
+	        		public boolean onTouch(View v, MotionEvent event) {
+	        			x=event.getX();
+	        			y=event.getY();
+	        			switch(event.getAction()){
+	        			case MotionEvent.ACTION_DOWN:
+	        			xStart = x;
+	        			yStart = y;
+	        				//Log.d("My","DOWN");
+	        				String e=Float.toString(x);
+	        				Log.d("My","XStart:"+ e);
+	        				e=Float.toHexString(y);
+	        				Log.d("My","YSTART:"+ e);
+	        				break;
+	        			case MotionEvent.ACTION_MOVE:
+	        				Log.d("My","MOVE");
+	        				xEnd = x;
+	        				yEnd = y;
+	        				String i =Float.toString(yEnd);
+	        				Log.d("My","YEND:"+ i);
+	        				yEnd=yStart-yEnd;
+	        				i=Float.toString(xEnd);
+	        			Log.d("My","XEND:"+ i);
+	        				deltX=xStart-xEnd;
+	        				break;
+	        			case	MotionEvent.ACTION_UP:
+	        				x=0;
+	        				y=0;
+	        				//Log.d("My","UP");
+	        				
+	        				break;
+	        			//case MotionEvent.ACTION_CANCEL:
+	        				//Log.d("My","CANSEL");
+	        				//x=0;
+	        				//y=0;
+	        				
+	        				//break;
+	        			}
+	        			if( yEnd<=5 && yEnd>-5 && xStart > xEnd &&  deltX>15 && (position == 1)){
+	        			//Log.d("My","Change");
+	        				imageView.setVisibility(View.INVISIBLE);
+	        				imageView.setVisibility(View.VISIBLE);
+	        				 imageView.setBackgroundResource(R.drawable.pagesanim);
+	        			
+	        				
+	        				
+	        			}
+	        		     if(yEnd<=10 && yEnd>-10 && xStart < xEnd &&  deltX<-35 && (position==0))
+	        		     {
+	        		    	 imageView.setVisibility(View.INVISIBLE);
+	         				imageView.setVisibility(View.VISIBLE); 
+	        		    	 imageView.setImageResource(R.drawable.backpageanim);
+	        		    	
+	        		    	
+	        		    	 
+	        		     }
+	        			return true;
+	        		}
+	        	 });
+	         
+	         
+	         container.addView(layout);
+	         return layout;
+	     }
+
+	     @Override
+	     public void destroyItem(ViewGroup container, int position, Object object) {
+	      container.removeView((LinearLayout)object);
+	     }
+
+	    }
+
+	  private class MyViewPager extends ViewPager {
+		
+				public MyViewPager(Context context) {
+			super(context);
+				// TODO Auto-generated constructor stub
+			}
+
+			@Override
+				protected void onDraw(Canvas canvas) {
+					Paint paint = new Paint();
+						canvas.drawLine(10, 0, 10,ybook, paint);
+				}
+			}
+
+	
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.book, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	}
