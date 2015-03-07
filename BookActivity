@@ -15,16 +15,20 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.GridLayout.LayoutParams;
@@ -47,20 +51,18 @@ public class BookActivity extends Activity implements OnTouchListener {
    MyViewPager myViewPager;
     ViewPager viewPager;
     MyPagerAdapter myPagerAdapter;
-Viewpage view;
-	    @Override
+    Handler getitem;
+    Intent intent2;
+ @Override
 	    protected void onCreate(Bundle savedInstanceState) {
 	     super.onCreate(savedInstanceState);
 	     getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		    getActionBar().hide();
-		   
 	     setContentView(R.layout.activity_book);
-	     Intent intent = getIntent();
-         
+	     intent2= new Intent(BookActivity.this,ListofSubjects.class);
+	    
 	     viewPager = (ViewPager)findViewById(R.id.view_pager);
-	     //myViewPager = new  MyViewPager(this);
-	     myPagerAdapter = new MyPagerAdapter();
-	       
+	     myPagerAdapter =new MyPagerAdapter();
 	     viewPager.setAdapter(myPagerAdapter);
 	     viewPager.setCurrentItem(1); 
  
@@ -93,11 +95,15 @@ Viewpage view;
 	    	 ViewGroup.LayoutParams  params=new ViewGroup.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
 		        int page = position;
-		       
+		        RelativeLayout.LayoutParams parms2 = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+		                 LayoutParams.WRAP_CONTENT);
+		        parms2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 	         TextView textView = new TextView(BookActivity.this);
+	         textView.setId(1);
 	        textView.setTextSize(30);
 	         textView.setText("Понедельник");
-	         textView.setLayoutParams(params);
+	         textView.setLayoutParams(parms2);
+	         
 	         textView.setPadding(0, 10, 0, 0);
           textView.setGravity(Gravity.CENTER|Gravity.TOP);
 	   
@@ -106,8 +112,12 @@ Viewpage view;
 	         imageView.setBackgroundResource(res[page]);
 	         imageView.setLayoutParams(params);
 	         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-	         
+	         RelativeLayout.LayoutParams parms1 = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+	                 LayoutParams.WRAP_CONTENT);
+
 	         RelativeLayout layout = new RelativeLayout(BookActivity.this);
+	        parms1.addRule(RelativeLayout.BELOW,1);
+
 	         
 	         
 	        xbook= imageView.getWidth();
@@ -117,12 +127,27 @@ Viewpage view;
 	       gride.setRowCount(3);
 	       gride.setX(xbook);
 	       gride.setY(ybook);
-	     EditText editText = new EditText(BookActivity.this);
+	 
+	      
+	     Button but1=new Button(BookActivity.this);
+	     but1.setId(2);
+	     but1.setLayoutParams(parms1);
+	     but1.setText("предмет  1");
+	     but1.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				
+				 startActivity(intent2);
+				
+			}
+	    	 
+	     });
 	    
 	       
 	         layout.addView(imageView);
 	         layout.addView(textView);
-	      
+	         layout.addView(but1);
 	        layout.setOnTouchListener(new OnTouchListener(){
               
 	        	 @Override
@@ -168,7 +193,7 @@ Viewpage view;
 	        				imageView.setVisibility(View.INVISIBLE);
 	        				imageView.setVisibility(View.VISIBLE);
 	        				 imageView.setBackgroundResource(R.drawable.pagesanim);
-	        			
+	        				 
 	        				
 	        				
 	        			}
@@ -197,20 +222,6 @@ Viewpage view;
 
 	    }
 
-	  private class MyViewPager extends ViewPager {
-		
-				public MyViewPager(Context context) {
-			super(context);
-				// TODO Auto-generated constructor stub
-			}
-
-			@Override
-				protected void onDraw(Canvas canvas) {
-					Paint paint = new Paint();
-						canvas.drawLine(10, 0, 10,ybook, paint);
-				}
-			}
-
 	
 
 	@Override
@@ -237,4 +248,7 @@ Viewpage view;
 		// TODO Auto-generated method stub
 		return false;
 	}
-	}
+
+	
+	
+}
