@@ -1,0 +1,77 @@
+package com.example.timetable;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.provider.BaseColumns;
+import android.util.Log;
+import android.view.View;
+
+public class DBManager{
+	
+	private Context context;
+	private String DB_NAME = "TimeTable.db";
+    private String ID = "_id";
+	private SQLiteDatabase db;
+
+	private static DBManager dbManager;
+
+	public static DBManager getInstance(Context context) {
+		if (dbManager == null) {
+			dbManager = new DBManager(context);
+		}
+		return dbManager;
+	}
+
+	private DBManager(Context context) {
+		this.context = context;
+		db = context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
+		createTablesIfNeedBe(); 
+	}
+
+	void addResult(String subject) {
+		db.execSQL("INSERT INTO SUBJECTS VALUES ('" +  subject 
+				+ "');");
+		
+	}
+
+	ArrayList<String> getAllSubjects() {
+
+		ArrayList<String> data = new ArrayList<String>();
+		Cursor cursor = db.rawQuery("SELECT * FROM SUBJECTS;", null);
+		boolean hasMoreData = cursor.moveToFirst();
+
+		while (hasMoreData) {
+			String namesub = cursor.getString(cursor.getColumnIndexOrThrow("SUBJECT"));
+		
+			data.add(new String(namesub));
+			hasMoreData = cursor.moveToNext();
+		}
+
+		return data;
+	}
+
+	private void createTablesIfNeedBe() {
+		db.execSQL("CREATE TABLE IF NOT EXISTS SUBJECTS ("+ ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+"SUBJECT TEXT);");
+	}
+
+	private boolean dbExist() {
+		File dbFile = context.getDatabasePath(DB_NAME);
+		return dbFile.exists();
+	}
+  void delete(Long id){
+	  
+	  Log.d("DBdel",String.valueOf(id));
+
+
+	 
+	 db.delete("SUBJECTS","SUBJECT =?",new String[]{String.valueOf(id)});
+	 
+  }
+//new String[]{String.valueOf(id)}
+}
